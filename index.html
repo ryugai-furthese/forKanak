@@ -3,220 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Un mensaje para ti</title>
+    <title>A Message for Kanak</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Dancing+Script:wght@700&display=swap');
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0;
-            overflow: hidden; /* Prevent scroll during intro */
-            background: #0f172a;
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: white; overflow-x: hidden; }
         .cursive { font-family: 'Dancing Script', cursive; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* Card Flip Logic */
+        .card-inner { transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .card-back { transform: rotateY(180deg); }
+        
+        #mainPage, #cardsPage { display: none; opacity: 0; transition: opacity 0.8s ease; }
+        .locked { filter: grayscale(1) brightness(0.5); cursor: not-allowed !important; }
 
-        /* Smooth Page Transition */
-        #mainContent {
-            display: none;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        /* Glassmorphism Effect */
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* The "Amazing" Button Animation */
-        .magic-button {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
-        }
-
-        .magic-button:hover {
-            box-shadow: 0 0 40px rgba(234, 179, 8, 0.5);
-            transform: scale(1.05);
-        }
-
-        .magic-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: all 0.6s;
-        }
-
-        .magic-button:hover::before {
-            left: 100%;
-        }
-
-        /* Firework Styles */
-        #canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .content-layer { position: relative; z-index: 10; }
-
-        .neon-mode { background: #020617 !important; }
-        .gold-glow { text-shadow: 0 0 25px rgba(234, 179, 8, 0.5); }
-        .neon-glow { text-shadow: 0 0 25px rgba(168, 85, 247, 0.8); }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-        .animate-float { animation: float 5s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
     </style>
 </head>
-<body class="text-white min-h-screen">
+<body>
 
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
-    <section id="introPage" class="content-layer h-screen flex flex-col items-center justify-center p-6 text-center">
+    <section id="introPage" class="relative z-10 h-screen flex flex-col items-center justify-center p-6 text-center">
         <div class="animate-float mb-8">
-            <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-                This is what I do in my <br>
-                <span class="text-yellow-400 font-black italic">'Free time' ;))</span>
+            <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
+                Here's the word that I believe <br>
+                <span class="text-yellow-400 font-black italic">fits you best...</span>
             </h2>
-            <p class="text-slate-400 text-sm md:text-base">Curious? Go ahead...</p>
         </div>
-
-        <button onclick="revealGreeting()" class="magic-button bg-yellow-500 hover:bg-yellow-400 text-black px-12 py-5 rounded-full font-bold text-xl flex items-center gap-3">
-            <i data-lucide="play" class="fill-current"></i>
+        <button onclick="showMainPage()" class="bg-yellow-500 hover:bg-yellow-400 text-black px-12 py-5 rounded-full font-bold text-xl flex items-center gap-3 transition-transform hover:scale-105">
+            <i data-lucide="heart" class="fill-current"></i>
             Click Me
         </button>
     </section>
 
-    <div id="mainContent">
-        <nav class="content-layer p-6 flex justify-between items-center">
-            <div class="flex items-center gap-2 glass px-4 py-2 rounded-full border border-yellow-500/30">
-                <i data-lucide="diamond" class="text-red-500 fill-red-500 w-4 h-4"></i>
-                <span class="text-sm font-semibold tracking-wide">For Kanak</span>
-            </div>
-            <div class="flex items-center gap-3 glass p-2 rounded-full px-4">
-                <i data-lucide="sun" class="w-4 h-4 text-yellow-400"></i>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="moodToggle" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                </label>
-                <i data-lucide="moon" class="w-4 h-4 text-purple-400"></i>
-            </div>
-        </nav>
-
-        <main class="content-layer container mx-auto px-4 py-8 flex flex-col items-center justify-center">
+    <section id="mainPage" class="relative z-10 min-h-screen p-6">
+        <div class="max-w-3xl mx-auto text-center mt-20">
+            <h1 class="text-6xl md:text-8xl font-black mb-6 text-yellow-400">HAPPY BIRTHDAY!</h1>
             
-            <div class="text-center mb-8 animate-float">
-                <h1 id="yearHeading" class="text-7xl md:text-9xl font-extrabold gold-glow">2026</h1>
-                <p id="subtext" class="text-yellow-200/60 tracking-[0.4em] uppercase text-xs md:text-sm mt-4">Adventure Awaits</p>
-            </div>
-
-            <div class="glass max-w-2xl w-full p-8 md:p-12 rounded-[2.5rem] text-center mb-10 border-t border-white/20">
-                <div class="mb-6 inline-block p-4 bg-white/5 rounded-full">
-                    <i data-lucide="sparkles" class="w-8 h-8 text-yellow-400" id="cardIcon"></i>
-                </div>
+            <div class="glass p-8 md:p-12 rounded-[2.5rem] border-t border-white/20 mb-10">
+                <p id="birthdayMessage" class="text-xl md:text-2xl leading-relaxed text-slate-200">
+                    (Your custom birthday message will go right here, Kanak!)
+                </p>
                 
-                <h2 class="text-2xl md:text-3xl font-bold mb-6 cursive text-yellow-100">Happy New Year, Kanak!</h2>
-                
-                <div class="space-y-4 text-slate-200 leading-relaxed text-base md:text-lg">
-                    <p>Just like how you made the last day of my 2025 so great, here's a small effort to making the first day of your 2026 special...</p>
-                    <p class="font-medium text-white">
-                        I wish this year brings you so much more of adventures, good times, academic achievements, fun and memorable moments, trips (hopefully xD), so that when you look back on the 31st Dec. of THIS year, you say <span class="text-yellow-400">"It was worth it" :)))</span>
-                    </p>
-                    <p class="text-sm md:text-base opacity-90 italic pt-4">
-                        Oh and I'll make sure I play a vital role making all of that possible ;P✌🏼 Let's make each day of the year count>>>
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap justify-center gap-4 mt-10">
-                    <button onclick="launchFireworks()" class="bg-gradient-to-r from-yellow-400 to-amber-600 hover:scale-105 active:scale-95 transition-all text-black font-bold py-4 px-10 rounded-full flex items-center gap-2 shadow-xl shadow-yellow-500/20" id="fireworkBtn">
-                        <i data-lucide="rocket" class="w-5 h-5"></i>
-                        Celebrate Now
+                <div class="flex flex-wrap justify-center gap-6 mt-10">
+                    <button onclick="launchFireworks()" class="bg-yellow-500 text-black font-bold py-4 px-10 rounded-full flex items-center gap-2 hover:bg-yellow-400 transition-all">
+                        <i data-lucide="clapperboard"></i> Cheers!
                     </button>
-                    
-                    <button onclick="generateResolution()" class="glass hover:bg-white/10 transition-all py-4 px-8 rounded-full flex items-center gap-2 border border-white/20">
-                        <i data-lucide="map-pin" class="w-5 h-5 text-yellow-400"></i>
-                        Next Trip? (Click for a random idea)
+                    <button onclick="showCardsPage()" class="glass border-yellow-500/50 py-4 px-10 rounded-full flex items-center gap-2 hover:bg-white/10 transition-all">
+                        <i data-lucide="layers" class="text-yellow-400"></i> The 20-Day Journey
                     </button>
                 </div>
-                
-                <p id="resolutionDisplay" class="mt-6 font-semibold text-yellow-400 min-h-[1.5rem]"></p>
             </div>
+        </div>
+    </section>
 
-            <div class="text-center mb-12">
-                <p class="text-xs uppercase tracking-widest text-slate-500 mb-6 italic">Time left to make this year of '26 count:</p>
-                <div class="flex gap-4 md:gap-8 justify-center" id="countdown">
-                    <div class="text-center"><span class="block text-2xl md:text-4xl font-bold" id="days">00</span><span class="text-[10px] text-slate-500 uppercase">Days</span></div>
-                    <div class="text-center"><span class="block text-2xl md:text-4xl font-bold" id="hours">00</span><span class="text-[10px] text-slate-500 uppercase">Hrs</span></div>
-                    <div class="text-center"><span class="block text-2xl md:text-4xl font-bold" id="mins">00</span><span class="text-[10px] text-slate-500 uppercase">Min</span></div>
-                    <div class="text-center"><span class="block text-2xl md:text-4xl font-bold" id="secs">00</span><span class="text-[10px] text-slate-500 uppercase">Sec</span></div>
-                </div>
+    <section id="cardsPage" class="relative z-10 min-h-screen p-6 pb-20">
+        <button onclick="backToMain()" class="mb-8 flex items-center gap-2 opacity-60 hover:opacity-100 transition-all">
+            <i data-lucide="arrow-left"></i> Back
+        </button>
+        <h2 class="text-4xl font-bold text-center mb-12 cursive text-yellow-400">20 Days of You</h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-6xl mx-auto" id="cardsGrid">
             </div>
-        </main>
-    </div>
+    </section>
 
     <script>
         lucide.createIcons();
 
-        // Reveal Logic
-        function revealGreeting() {
+        // 1. Navigation Logic
+        function showMainPage() {
             document.getElementById('introPage').style.display = 'none';
-            const main = document.getElementById('mainContent');
-            main.style.display = 'block';
-            document.body.style.overflow = 'auto';
-            setTimeout(() => { main.style.opacity = '1'; }, 50);
-            launchFireworks();
+            const page = document.getElementById('mainPage');
+            page.style.display = 'block';
+            setTimeout(() => page.style.opacity = '1', 50);
+            initStartDate(); // Start the 20-day clock
         }
 
-        // Theme Toggle
-        const moodToggle = document.getElementById('moodToggle');
-        moodToggle.addEventListener('change', () => {
-            if (moodToggle.checked) {
-                document.body.classList.add('neon-mode');
-                document.getElementById('yearHeading').className = 'text-7xl md:text-9xl font-extrabold neon-glow text-purple-400 transition-all duration-700';
-            } else {
-                document.body.classList.remove('neon-mode');
-                document.getElementById('yearHeading').className = 'text-7xl md:text-9xl font-extrabold gold-glow text-white transition-all duration-700';
+        function showCardsPage() {
+            document.getElementById('mainPage').style.display = 'none';
+            const page = document.getElementById('cardsPage');
+            page.style.display = 'block';
+            setTimeout(() => page.style.opacity = '1', 50);
+            renderCards();
+        }
+
+        function backToMain() {
+            document.getElementById('cardsPage').style.display = 'none';
+            document.getElementById('mainPage').style.display = 'block';
+        }
+
+        // 2. The 20-Day Lock Logic
+        function initStartDate() {
+            if (!localStorage.getItem('birthdayJourneyStart')) {
+                localStorage.setItem('birthdayJourneyStart', new Date().getTime());
             }
-        });
-
-        // Trip Generator
-        const trips = ["Mountains are calling! 🏔️", "Sunset trip? 🌅", "Tour the best museums in the country 🚗", "Weekend getaway soon! ✨", "Exploring the city together 🏙️"];
-        function generateResolution() {
-            const display = document.getElementById('resolutionDisplay');
-            display.innerText = trips[Math.floor(Math.random() * trips.length)];
         }
 
-        // Countdown
-        function updateTimer() {
-            const now = new Date();
-            const endOfYear = new Date("January 1, 2027 00:00:00");
-            const diff = endOfYear - now;
-            document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-            document.getElementById('hours').innerText = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
-            document.getElementById('mins').innerText = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
-            document.getElementById('secs').innerText = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-        }
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        const cardContent = [
+            { word: "Radiant", note: "Because you light up every room you walk into." },
+            { word: "Day 2 Word", note: "The note for Day 2 goes here..." },
+            // ... I will fill all 20 once you provide the words/notes
+        ];
 
-        // Fireworks Engine
+        function renderCards() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+            const startTime = parseInt(localStorage.getItem('birthdayJourneyStart'));
+            const now = new Date().getTime();
+
+            for (let i = 0; i < 20; i++) {
+                const daysElapsed = Math.floor((now - startTime) / (1000 * 60 * 60 * 24));
+                const isLocked = i > daysElapsed;
+                
+                // Calculate time remaining for the next card
+                const unlockTime = startTime + (i * 24 * 60 * 60 * 1000);
+                const timeLeft = unlockTime - now;
+                const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
+
+                const card = document.createElement('div');
+                card.className = `relative h-64 perspective-1000 ${isLocked ? 'locked' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="card-inner w-full h-full glass rounded-2xl ${isLocked ? '' : 'hover-flip'}" onclick="${isLocked ? '' : 'this.classList.toggle(\'flipped\')'}">
+                        <div class="card-front flex flex-col items-center justify-center p-4 text-center">
+                            <span class="text-sm opacity-50 mb-2">Day ${i + 1}</span>
+                            <h3 class="text-xl font-bold text-yellow-400">${isLocked ? '<i data-lucide="lock" class="mx-auto"></i>' : cardContent[i]?.word || 'Word'}</h3>
+                            ${isLocked ? `<p class="text-[10px] mt-2">Unlocks in ${Math.floor(i - (now-startTime)/(86400000))}d ${hoursLeft % 24}h</p>` : ''}
+                        </div>
+                        <div class="card-back glass bg-yellow-500/10 flex items-center justify-center p-6 text-center rounded-2xl">
+                            <p class="text-sm italic">"${cardContent[i]?.note || 'Your note here'}"</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+            lucide.createIcons();
+        }
+
+        // 3. Fireworks (Cheers) Logic - [Reusing your engine]
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -227,8 +158,8 @@
         class Particle {
             constructor(x, y, color) {
                 this.x = x; this.y = y; this.color = color;
-                this.velocity = { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 10 };
-                this.alpha = 1; this.friction = 0.96;
+                this.velocity = { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 };
+                this.alpha = 1; this.friction = 0.95;
             }
             draw() {
                 ctx.globalAlpha = this.alpha;
@@ -238,25 +169,25 @@
             update() {
                 this.velocity.x *= this.friction; this.velocity.y *= this.friction;
                 this.x += this.velocity.x; this.y += this.velocity.y;
-                this.alpha -= 0.012;
+                this.alpha -= 0.01;
             }
         }
 
         function launchFireworks() {
-            const colors = moodToggle.checked ? ['#a855f7', '#d946ef', '#ffffff'] : ['#fbbf24', '#f59e0b', '#ffffff'];
-            for (let j = 0; j < 6; j++) {
+            const colors = ['#fbbf24', '#f59e0b', '#ffffff', '#a855f7'];
+            for (let j = 0; j < 5; j++) {
                 setTimeout(() => {
                     const x = Math.random() * canvas.width;
-                    const y = Math.random() * canvas.height * 0.4;
-                    for (let i = 0; i < 50; i++) {
+                    const y = Math.random() * canvas.height * 0.5;
+                    for (let i = 0; i < 40; i++) {
                         particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
                     }
-                }, j * 150);
+                }, j * 200);
             }
         }
 
         function animate() {
-            ctx.fillStyle = moodToggle.checked ? 'rgba(2, 6, 23, 0.15)' : 'rgba(15, 23, 42, 0.15)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             particles.forEach((p, i) => {
                 if (p.alpha > 0) { p.update(); p.draw(); }
