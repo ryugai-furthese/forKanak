@@ -40,23 +40,27 @@
         }
         .animate-birthday { animation: floatHeader 5s ease-in-out infinite; }
 
+        /* SCATTERED MULTILINGUAL CSS */
         .language-float {
-            position: absolute;
+            position: fixed;
             font-weight: 800;
-            opacity: 0.15; /* Keeps it subtle so it doesn't distract from the main text */
+            opacity: 0.12;
             pointer-events: none;
             user-select: none;
             white-space: nowrap;
-            animation: floatAround 10s ease-in-out infinite;
-            z-index: -1;
+            z-index: 1; /* Sits behind the main content */
             color: #fbbf24;
         }
 
-@keyframes floatAround {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(15px, -20px) rotate(2deg); }
-    66% { transform: translate(-10px, 15px) rotate(-1deg); }
-}
+        .float-slow { animation: floatAround 18s ease-in-out infinite; }
+        .float-med { animation: floatAround 14s ease-in-out infinite; }
+        .float-fast { animation: floatAround 10s ease-in-out infinite; }
+
+        @keyframes floatAround {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -40px) rotate(4deg); }
+            66% { transform: translate(-20px, 30px) rotate(-3deg); }
+        }
 
         /* Card 3D Flip & Hover Logic */
         .perspective-1000 { perspective: 1000px; }
@@ -96,6 +100,27 @@
     <div class="bg-mesh"></div>
     <canvas id="canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
+    <div class="language-float float-slow top-[5%] left-[2%] text-2xl">Happy Birthday</div>
+    <div class="language-float float-med top-[2%] right-[10%] text-3xl">जन्मदिन की शुभकामनाएँ</div>
+    <div class="language-float float-fast bottom-[15%] left-[5%] text-xl">जन्मदिनक शुभ कामना</div>
+    <div class="language-float float-slow bottom-[5%] right-[5%] text-2xl">பிறந்தநாள் வாழ்த்துக்கள்</div>
+    <div class="language-float float-med top-[20%] left-[1%] text-lg">જન્મદિવસની મુબારક</div>
+    <div class="language-float float-fast top-[45%] right-[2%] text-xl">जन्मदिनस्य शुभाशयाः</div>
+    <div class="language-float float-slow bottom-[25%] left-[2%] text-2xl">سالگرہ مبارک</div>
+    <div class="language-float float-med top-[1%] left-[35%] text-xl">Bon Anniversaire</div>
+    <div class="language-float float-fast bottom-[2%] left-[40%] text-lg">Feliz Cumpleaños</div>
+    <div class="language-float float-slow top-[10%] right-[25%] text-xl">お誕生日おめでとう</div>
+    <div class="language-float float-med bottom-[10%] right-[30%] text-lg">생일 축하해요</div>
+    <div class="language-float float-fast top-[85%] left-[12%] text-md">Alles Gute zum Geburtstag</div>
+    <div class="language-float float-slow top-[65%] right-[1%] text-xl">生日快乐</div>
+    <div class="language-float float-med bottom-[40%] right-[4%] text-sm">Gefeliciteerd</div>
+    <div class="language-float float-fast top-[20%] right-[45%] text-lg">Feliz Aniversário</div>
+    <div class="language-float float-slow bottom-[30%] left-[18%] text-md">С днем рождения</div>
+    <div class="language-float float-med top-[75%] right-[12%] text-sm">Grattis på födelsedagen</div>
+    <div class="language-float float-fast top-[25%] left-[15%] text-lg">Maligayang Bati</div>
+    <div class="language-float float-slow bottom-[20%] right-[40%] text-xl">Heri ya Siku ya Kuzaliwa</div>
+    <div class="language-float float-med top-[55%] left-[4%] text-md">Felix Sit Natalis Dies</div>
+
     <section id="introPage" class="relative z-10 h-screen flex flex-col items-center justify-center p-6 text-center">
         <div class="mb-8">
             <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
@@ -108,29 +133,6 @@
             Reveal
         </button>
     </section>
-    <section id="mainPage" class="relative z-10 min-h-screen p-6 flex items-center justify-center">
-        <div class="relative w-full max-w-6xl mx-auto text-center">
-            
-            <div class="language-float top-[-15%] left-[0%] text-2xl">Happy Birthday</div>
-            <div class="language-float top-[-10%] right-[5%] text-3xl">जन्मदिन की शुभकामनाएँ</div>
-            <div class="language-float bottom-[-12%] left-[10%] text-xl">जन्मदिनक शुभ कामना</div>
-            <div class="language-float bottom-[-8%] right-[10%] text-2xl">பிறந்தநாள் வாழ்த்துக்கள்</div>
-            <div class="language-float top-[15%] left-[-12%] text-lg">જન્મદિવસની મુબારક</div>
-            <div class="language-float top-[50%] right-[-10%] text-xl">जन्मदिनस्य शुभाशयाः</div>
-            <div class="language-float bottom-[20%] left-[-8%] text-2xl">سالگرہ مبارک</div>
-            <div class="language-float top-[-20%] left-[35%] text-xl">Bon Anniversaire</div>
-            <div class="language-float bottom-[-18%] left-[40%] text-lg">Feliz Cumpleaños</div>
-            <div class="language-float top-[5%] right-[25%] text-xl">お誕生日おめでとう</div>
-            <div class="language-float bottom-[5%] right-[35%] text-lg">생일 축하해요</div>
-            <div class="language-float top-[85%] left-[5%] text-md">Alles Gute zum Geburtstag</div>
-            <div class="language-float top-[25%] right-[-5%] text-xl">生日快乐</div>
-            <div class="language-float bottom-[45%] right-[-10%] text-sm">Gefeliciteerd</div>
-            <div class="language-float top-[-22%] right-[40%] text-lg">Feliz Aniversário</div>
-            <div class="language-float bottom-[35%] left-[-10%] text-md">С днем рождения</div>
-            <div class="language-float top-[75%] right-[5%] text-sm">Grattis på födelsedagen</div>
-            <div class="language-float top-[10%] left-[-5%] text-lg">Maligayang Bati</div>
-            <div class="language-float bottom-[-15%] right-[25%] text-xl">Heri ya Siku ya Kuzaliwa</div>
-            <div class="language-float top-[0%] right-[-8%] text-md">Felix Sit Natalis Dies</div>
 
     <section id="mainPage" class="relative z-10 min-h-screen p-6">
         <div class="max-w-6xl mx-auto text-center mt-24">
@@ -141,11 +143,13 @@
             <div class="glass w-full p-10 md:py-14 md:px-20 rounded-[3rem] md:rounded-[5rem] border-t border-white/20 mb-10 shadow-2xl">
                 <p id="birthdayMessage" class="text-lg md:text-xl leading-relaxed text-slate-100 font-light max-w-5xl mx-auto">
                     In the era that feels excessively annoying, loud and distracted, your presence has always felt like the gentlemost soothe that I can provide to my conscience. It has always felt like a calm and amazing clarity. The way you make your parents', your family's, your friends', your well-wishers' and especially my life a much much better place just by BEING in it is self-explanatory for the kind of person you are. Never in hundreds of years will I ever come across such a wonderful soul as yours. One can only wonder and thank god for giving you inn their lives. When I went to the temple this morning, all I prayed for was your health, happiness, success, and all your wishes being granted in the best manner (i wished for another thing but that will remain a secret for a while hehe ;))
+                    <br><br>
                     Your birthday is now one of THE MOST special days of the year that I will wait for eagerly and impatiently, I know that for sure. So today, it's ALLL ABOUT YOUUU. A very very HAPPY BIRTHDAY, Ms. Kanak Tamrakar, and the heartiest congratulations on havinng lived all these years such gracefully. Oh and last but not the least, Thank you so so so much for being born.
-                    
-                    As for this "perfect  word" business, you know, I did not expect a small question like "What word would you use to describe me!?" become such a key-player in my inspiration for your birthday wish🙈 Yes, I did think of a word for you then, but being the impossible task that it was, i kept thinking how INADEQUATE it was to describe you in the least.
+                    <br><br>
+                    As for this "perfect word" business, you know, I did not expect a small question like "What word would you use to describe me!?" become such a key-player in my inspiration for your birthday wish🙈 Yes, I did think of a word for you then, but being the impossible task that it was, i kept thinking how INADEQUATE it was to describe you in the least.
                     So, I came up with an even better idea. For the next "20" days, You will find a word for describing you on this very site. I know it still won't be enough, but atleast it would so much better be than ONE measley word xD
-                
+                </p>
+
                 <div class="flex flex-wrap justify-center gap-6 mt-12">
                     <button onclick="launchFireworks()" class="bg-white text-black font-bold py-5 px-12 rounded-full flex items-center gap-3 hover:bg-yellow-400 transition-all transform hover:-translate-y-1 shadow-lg shadow-white/5">
                         <i data-lucide="sparkles"></i> Cheers to YOUUU
@@ -164,9 +168,7 @@
                 <i data-lucide="arrow-left"></i> BACK TO CELEBRATION
             </button>
             <h2 class="text-5xl font-bold text-center mb-16 cursive text-white">20 Days of You</h2>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8" id="cardsGrid">
-                </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8" id="cardsGrid"></div>
         </div>
     </section>
 
@@ -196,12 +198,10 @@
             document.getElementById('mainPage').style.display = 'block';
         }
 
-        // --- THE CONTENT ---
-        // REPLACE THESE WITH YOUR 20 WORDS AND NOTES
         const journeyContent = [
             { word: "Resplendent", note: "Most people think of 'shining' as something passive, like a reflection. But your light is different—it’s active. It comes from the intentional way you live, the way you do everything with such grace & passion, and the relentless way you pursue a better version of yourself every single day." },
             { word: "Brave", note: "The way you tackle every challenge is inspiring." },
-            // ... add the rest here
+            // Add remaining days here
         ];
 
         function renderCards() {
@@ -245,7 +245,6 @@
             lucide.createIcons();
         }
 
-        // --- FIREWORKS (CHEERS) ---
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
