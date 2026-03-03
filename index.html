@@ -116,7 +116,7 @@
     <div class="language-float float-med bottom-[40%] right-[4%] text-sm">Gefeliciteerd</div>
     <div class="language-float float-fast top-[20%] right-[45%] text-lg">Feliz Aniversário</div>
     <div class="language-float float-slow bottom-[30%] left-[18%] text-md">С днем рождения</div>
-    <div class="language-float float-med top-[75%] right-[12%] text-sm">Grattis på födelsedagen</div>
+    <div class="language-float float-med top-[75%] right-[12%] text-sm">Grattis पर födelsedagen</div>
     <div class="language-float float-fast top-[25%] left-[15%] text-lg">Maligayang Bati</div>
     <div class="language-float float-slow bottom-[20%] right-[40%] text-xl">Heri ya Siku ya Kuzaliwa</div>
     <div class="language-float float-med top-[55%] left-[4%] text-md">Felix Sit Natalis Dies</div>
@@ -208,41 +208,63 @@
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
             const startTime = parseInt(localStorage.getItem('journeyStart'));
-            const now = new Date().getTime();
 
             for (let i = 0; i < 20; i++) {
                 const dayInMs = 24 * 60 * 60 * 1000;
-                const unlockTime = startTime + (i * dayInMs);
-                const isLocked = now < unlockTime;
+                let unlockTime = startTime + (i * dayInMs);
                 
-                const card = document.createElement('div');
-                card.className = `perspective-1000 h-72 w-full ${isLocked ? 'locked' : 'hover-card cursor-pointer'}`;
-                
-                const timeDiff = unlockTime - now;
-                const daysLeft = Math.ceil(timeDiff / dayInMs);
+                // REVEAL DAY 2 WITH DAY 1 (Requirement 3)
+                if (i === 1) unlockTime = startTime;
 
-                card.innerHTML = `
-                    <div class="card-inner ${isLocked ? '' : ''}" onclick="${isLocked ? '' : 'this.classList.toggle(\'flipped\')'}">
-                        <div class="card-front glass flex flex-col items-center justify-center p-6 border border-white/10 shadow-xl">
-                            ${!isLocked ? '<div class="reveal-overlay font-bold text-yellow-400 tracking-widest uppercase text-sm">Reveal</div>' : ''}
-                            <span class="absolute top-4 left-4 text-[10px] uppercase tracking-widest opacity-40">Day ${i + 1}</span>
-                            ${isLocked ? `
-                                <i data-lucide="lock" class="w-8 h-8 opacity-20 mb-3"></i>
-                                <p class="text-[10px] text-yellow-500/50 font-bold uppercase tracking-tighter">Unlocks in ${daysLeft} days</p>
-                            ` : `
-                                <i data-lucide="sparkle" class="w-6 h-6 text-yellow-400 mb-4 animate-pulse"></i>
-                                <span class="text-xs text-slate-400">Day ${i+1} is ready</span>
-                            `}
-                        </div>
-                        <div class="card-back glass bg-yellow-500/20 border border-yellow-500/40 flex flex-col items-center justify-center p-6 text-center">
-                            <h3 class="text-yellow-400 font-bold mb-3 uppercase tracking-widest text-sm">${journeyContent[i]?.word || 'Surprise'}</h3>
-                            <p class="text-xs italic leading-relaxed text-slate-200">"${journeyContent[i]?.note || 'I haven\'t written this note yet!'}"</p>
-                        </div>
-                    </div>
-                `;
+                const card = document.createElement('div');
                 grid.appendChild(card);
+
+                const updateTimer = () => {
+                    const now = new Date().getTime();
+                    const isLocked = now < unlockTime;
+                    const timeDiff = unlockTime - now;
+
+                    // MATH FOR H/M/S (Requirement 2)
+                    const d = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                    const h = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                    card.className = `perspective-1000 h-72 w-full ${isLocked ? 'locked' : 'hover-card cursor-pointer'}`;
+                    
+                    card.innerHTML = `
+                        <div class="card-inner ${!isLocked && card.dataset.flipped === 'true' ? 'flipped' : ''}" 
+                             onclick="${isLocked ? '' : 'this.parentElement.dataset.flipped = this.parentElement.dataset.flipped === \"true\" ? \"false\" : \"true\"; this.classList.toggle(\'flipped\')'}">
+                            <div class="card-front glass flex flex-col items-center justify-center p-6 border border-white/10 shadow-xl relative">
+                                ${!isLocked ? '<div class="reveal-overlay font-bold text-yellow-400 tracking-widest uppercase text-sm">Reveal</div>' : ''}
+                                <span class="absolute top-4 left-4 text-[10px] uppercase tracking-widest opacity-40">Day ${i + 1}</span>
+                                ${isLocked ? `
+                                    <i data-lucide="lock" class="w-8 h-8 opacity-20 mb-3"></i>
+                                    <p class="text-[10px] text-yellow-500/70 font-bold uppercase">Unlocks In:</p>
+                                    <div class="text-yellow-400 font-mono text-[11px] mt-2 bg-black/30 px-2 py-1 rounded">
+                                        ${d}d ${h}h ${m}m ${s}s
+                                    </div>
+                                ` : `
+                                    <i data-lucide="sparkle" class="w-6 h-6 text-yellow-400 mb-4 animate-pulse"></i>
+                                    <span class="text-xs text-slate-400 font-bold uppercase tracking-widest">Ready!</span>
+                                `}
+                            </div>
+                            <div class="card-back glass bg-yellow-500/20 border border-yellow-500/40 flex flex-col items-center justify-center p-6 text-center">
+                                <h3 class="text-yellow-400 font-bold mb-3 uppercase tracking-widest text-sm">${journeyContent[i]?.word || 'Surprise'}</h3>
+                                <p class="text-xs italic leading-relaxed text-slate-200">"${journeyContent[i]?.note || 'I haven\'t written this note yet!'}"</p>
+                            </div>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                    
+                    if (!isLocked && card.interval) clearInterval(card.interval);
+                };
+
+                if (new Date().getTime() < unlockTime) {
+                    card.interval = setInterval(updateTimer, 1000);
+                }
+                updateTimer();
             }
-            lucide.createIcons();
         }
 
         const canvas = document.getElementById('canvas');
@@ -295,3 +317,4 @@
     </script>
 </body>
 </html>
+
